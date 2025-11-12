@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FOIA.FUN - FOIA Request Aggregator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+
+        header h1 {
+            font-size: 3.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        header p {
+            font-size: 1.3em;
+            opacity: 0.95;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .submit-section h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
+        }
+
+        input[type="text"],
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1em;
+            font-family: inherit;
+            transition: border-color 0.3s;
+        }
+
+        input[type="text"]:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 14px 32px;
+            font-size: 1.1em;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .ideas-section h2 {
+            color: #667eea;
+            margin-bottom: 25px;
+            font-size: 1.8em;
+        }
+
+        .idea-item {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-left: 4px solid #667eea;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .idea-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .idea-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .idea-title {
+            font-size: 1.4em;
+            font-weight: 700;
+            color: #333;
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .idea-description {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .idea-actions {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .upvote-btn {
+            background: #4caf50;
+            padding: 10px 20px;
+            font-size: 0.95em;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            min-width: 100px;
+        }
+
+        .upvote-btn:hover {
+            background: #45a049;
+        }
+
+        .upvote-btn.upvoted {
+            background: #2e7d32;
+        }
+
+        .fund-btn {
+            background: #ff9800;
+            padding: 10px 20px;
+            font-size: 0.95em;
+        }
+
+        .fund-btn:hover {
+            background: #f57c00;
+        }
+
+        .funding-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #666;
+            font-weight: 600;
+        }
+
+        .progress-bar {
+            flex: 1;
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            overflow: hidden;
+            min-width: 150px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4caf50, #8bc34a);
+            transition: width 0.5s;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+        }
+
+        .empty-state-icon {
+            font-size: 4em;
+            margin-bottom: 20px;
+        }
+
+        .empty-state p {
+            font-size: 1.2em;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2em;
+            font-weight: 700;
+            color: #667eea;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 0.9em;
+            margin-top: 5px;
+        }
+
+        .sort-controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .sort-btn {
+            background: #e0e0e0;
+            color: #333;
+            padding: 8px 16px;
+            font-size: 0.9em;
+        }
+
+        .sort-btn.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        @media (max-width: 600px) {
+            header h1 {
+                font-size: 2.5em;
+            }
+
+            .card {
+                padding: 20px;
+            }
+
+            .idea-header {
+                flex-direction: column;
+            }
+
+            .idea-actions {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🗂️ FOIA.FUN</h1>
+            <p>FOIA Request Aggregator - Crowdsourced Government Transparency</p>
+        </header>
+
+        <div class="card submit-section">
+            <h2>Submit a FOIA Idea</h2>
+            <form id="foiaForm">
+                <div class="form-group">
+                    <label for="ideaTitle">Request Title *</label>
+                    <input type="text" id="ideaTitle" required placeholder="What information should be requested?">
+                </div>
+                <div class="form-group">
+                    <label for="ideaDescription">Description *</label>
+                    <textarea id="ideaDescription" required placeholder="Describe the FOIA request and why it's important..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="fundingGoal">Funding Goal ($)</label>
+                    <input type="text" id="fundingGoal" placeholder="1000" value="1000">
+                </div>
+                <button type="submit">Submit FOIA Idea</button>
+            </form>
+        </div>
+
+        <div class="card ideas-section">
+            <h2>FOIA Ideas</h2>
+            
+            <div class="sort-controls">
+                <button class="sort-btn active" data-sort="votes">Most Upvoted</button>
+                <button class="sort-btn" data-sort="recent">Most Recent</button>
+                <button class="sort-btn" data-sort="funded">Most Funded</button>
+            </div>
+
+            <div class="stats" id="stats">
+                <div class="stat-item">
+                    <div class="stat-value" id="totalIdeas">0</div>
+                    <div class="stat-label">Total Ideas</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="totalVotes">0</div>
+                    <div class="stat-label">Total Votes</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="totalFunding">$0</div>
+                    <div class="stat-label">Total Funding</div>
+                </div>
+            </div>
+
+            <div id="ideasList"></div>
+        </div>
+    </div>
+
+    <script>
+        // State management
+        let ideas = [];
+        let currentSort = 'votes';
+        let userVotes = new Set();
+
+        // Load data from localStorage
+        function loadData() {
+            const savedIdeas = localStorage.getItem('foiaIdeas');
+            const savedVotes = localStorage.getItem('userVotes');
+            
+            if (savedIdeas) {
+                ideas = JSON.parse(savedIdeas);
+            }
+            
+            if (savedVotes) {
+                userVotes = new Set(JSON.parse(savedVotes));
+            }
+        }
+
+        // Save data to localStorage
+        function saveData() {
+            localStorage.setItem('foiaIdeas', JSON.stringify(ideas));
+            localStorage.setItem('userVotes', JSON.stringify([...userVotes]));
+        }
+
+        // Add sample data if empty
+        function addSampleData() {
+            if (ideas.length === 0) {
+                ideas = [
+                    {
+                        id: Date.now() + 1,
+                        title: "UFO Investigation Documents",
+                        description: "Request all documents related to UFO investigations from 1947 to present, including Project Blue Book files and recent UAP reports.",
+                        votes: 42,
+                        fundingGoal: 5000,
+                        currentFunding: 2300,
+                        timestamp: Date.now() - 86400000
+                    },
+                    {
+                        id: Date.now() + 2,
+                        title: "CIA Surveillance Programs",
+                        description: "Declassify information about domestic surveillance programs and their legal justifications.",
+                        votes: 38,
+                        fundingGoal: 3000,
+                        currentFunding: 1500,
+                        timestamp: Date.now() - 172800000
+                    },
+                    {
+                        id: Date.now() + 3,
+                        title: "Presidential Daily Briefings",
+                        description: "Request historical Presidential Daily Briefings from past administrations to understand decision-making processes.",
+                        votes: 25,
+                        fundingGoal: 2000,
+                        currentFunding: 800,
+                        timestamp: Date.now() - 259200000
+                    }
+                ];
+                saveData();
+            }
+        }
+
+        // Sort ideas
+        function sortIdeas() {
+            switch(currentSort) {
+                case 'votes':
+                    ideas.sort((a, b) => b.votes - a.votes);
+                    break;
+                case 'recent':
+                    ideas.sort((a, b) => b.timestamp - a.timestamp);
+                    break;
+                case 'funded':
+                    ideas.sort((a, b) => b.currentFunding - a.currentFunding);
+                    break;
+            }
+        }
+
+        // Update statistics
+        function updateStats() {
+            const totalVotes = ideas.reduce((sum, idea) => sum + idea.votes, 0);
+            const totalFunding = ideas.reduce((sum, idea) => sum + idea.currentFunding, 0);
+            
+            document.getElementById('totalIdeas').textContent = ideas.length;
+            document.getElementById('totalVotes').textContent = totalVotes;
+            document.getElementById('totalFunding').textContent = '$' + totalFunding.toLocaleString();
+        }
+
+        // Render ideas list
+        function renderIdeas() {
+            const ideasList = document.getElementById('ideasList');
+            
+            if (ideas.length === 0) {
+                ideasList.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📭</div>
+                        <p>No FOIA ideas yet. Be the first to submit one!</p>
+                    </div>
+                `;
+                return;
+            }
+
+            sortIdeas();
+            
+            ideasList.innerHTML = ideas.map(idea => {
+                const fundingPercentage = Math.min((idea.currentFunding / idea.fundingGoal) * 100, 100);
+                const hasUpvoted = userVotes.has(idea.id);
+                
+                return `
+                    <div class="idea-item">
+                        <div class="idea-header">
+                            <div class="idea-title">${escapeHtml(idea.title)}</div>
+                        </div>
+                        <div class="idea-description">${escapeHtml(idea.description)}</div>
+                        <div class="idea-actions">
+                            <button class="upvote-btn ${hasUpvoted ? 'upvoted' : ''}" onclick="upvoteIdea(${idea.id})" ${hasUpvoted ? 'disabled' : ''}>
+                                👍 ${idea.votes} ${hasUpvoted ? '(Voted)' : 'Upvote'}
+                            </button>
+                            <button class="fund-btn" onclick="fundIdea(${idea.id})">
+                                💰 Fund
+                            </button>
+                            <div class="funding-info">
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: ${fundingPercentage}%"></div>
+                                </div>
+                                <span>$${idea.currentFunding.toLocaleString()} / $${idea.fundingGoal.toLocaleString()}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            updateStats();
+        }
+
+        // Escape HTML to prevent XSS
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Submit new FOIA idea
+        document.getElementById('foiaForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const title = document.getElementById('ideaTitle').value.trim();
+            const description = document.getElementById('ideaDescription').value.trim();
+            const fundingGoal = parseInt(document.getElementById('fundingGoal').value) || 1000;
+            
+            if (!title || !description) {
+                alert('Please fill in all required fields');
+                return;
+            }
+
+            const newIdea = {
+                id: Date.now(),
+                title: title,
+                description: description,
+                votes: 0,
+                fundingGoal: fundingGoal,
+                currentFunding: 0,
+                timestamp: Date.now()
+            };
+
+            ideas.unshift(newIdea);
+            saveData();
+            renderIdeas();
+            
+            // Reset form
+            this.reset();
+            document.getElementById('fundingGoal').value = '1000';
+            
+            // Scroll to ideas section
+            document.querySelector('.ideas-section').scrollIntoView({ behavior: 'smooth' });
+        });
+
+        // Upvote an idea
+        function upvoteIdea(ideaId) {
+            if (userVotes.has(ideaId)) {
+                return;
+            }
+
+            const idea = ideas.find(i => i.id === ideaId);
+            if (idea) {
+                idea.votes++;
+                userVotes.add(ideaId);
+                saveData();
+                renderIdeas();
+            }
+        }
+
+        // Fund an idea
+        function fundIdea(ideaId) {
+            const amount = prompt('Enter funding amount ($):');
+            if (amount === null) return;
+            
+            const fundingAmount = parseInt(amount);
+            if (isNaN(fundingAmount) || fundingAmount <= 0) {
+                alert('Please enter a valid amount');
+                return;
+            }
+
+            const idea = ideas.find(i => i.id === ideaId);
+            if (idea) {
+                idea.currentFunding += fundingAmount;
+                saveData();
+                renderIdeas();
+                alert(`Thank you for funding $${fundingAmount}!`);
+            }
+        }
+
+        // Sort button handlers
+        document.querySelectorAll('.sort-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.sort-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                currentSort = this.dataset.sort;
+                renderIdeas();
+            });
+        });
+
+        // Initialize
+        loadData();
+        addSampleData();
+        renderIdeas();
+    </script>
+</body>
+</html>
