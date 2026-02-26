@@ -21,8 +21,8 @@ if [ ! -f .env.local ] && [ -f .env.example ]; then
   echo "Created .env.local from .env.example"
 fi
 
-if [ -f .env.local ] && grep -q "postgres://user:password@host/dbname" .env.local; then
-  echo "Warning: .env.local still has placeholder DATABASE_URL. Update it before using API routes."
+if [ -f .env.local ] && grep -q "vercel_blob_rw_xxx" .env.local; then
+  echo "Warning: .env.local still has placeholder BLOB_READ_WRITE_TOKEN. Update it before using API routes."
 fi
 
 case "$MODE" in

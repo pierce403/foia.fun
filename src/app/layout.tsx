@@ -41,9 +41,6 @@ export default function RootLayout({
               Anonymous event board for FOIA request ideas. No accounts, just
               crowd-sourced signal.
             </p>
-            <p className="mt-3 inline-flex items-center rounded-full border border-amber-300/60 bg-amber-200/10 px-3 py-1 text-[11px] font-medium tracking-[0.14em] text-amber-200">
-              LIVE FOR ONE NIGHT
-            </p>
           </header>
           <main className="mx-auto w-full max-w-5xl animate-enter px-4 pb-10 pt-6 sm:px-6">
             {children}

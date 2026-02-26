@@ -6,7 +6,7 @@ Anonymous FOIA brainstorming webapp for a live event night.
 
 - Next.js (React + TypeScript)
 - Tailwind CSS
-- Neon Postgres via Vercel (`DATABASE_URL`)
+- Vercel Blob (`@vercel/blob`)
 
 ## Features
 
@@ -14,7 +14,7 @@ Anonymous FOIA brainstorming webapp for a live event night.
 - Anonymous comments on ideas
 - Upvotes on ideas and comments
 - One-vote-per-target per browser via signed server cookie
-- Auto-created database schema on first API request
+- Blob-backed persistence for ideas, comments, and votes
 
 ## Local Setup
 
@@ -24,12 +24,18 @@ Anonymous FOIA brainstorming webapp for a live event night.
 npm install
 ```
 
-2. Create `.env.local` from `.env.example` and set `DATABASE_URL`.
+2. Pull environment variables from Vercel:
+
+```bash
+vercel env pull .env.local
+```
 
 3. Start dev server:
 
 ```bash
 npm run dev
+# or
+./run.sh dev
 ```
 
 App runs at `http://localhost:3000`.
@@ -37,11 +43,9 @@ App runs at `http://localhost:3000`.
 ## Vercel Deploy
 
 1. Import this repo into Vercel.
-2. Add a Postgres/Neon storage integration (or any Postgres provider).
-3. Set `DATABASE_URL` in Vercel project environment variables.
+2. Connect Vercel Blob storage to the project.
+3. Confirm `BLOB_READ_WRITE_TOKEN` exists for `development`, `preview`, and `production`.
 4. Deploy.
-
-The app creates required tables automatically when the first request hits the API.
 
 ## API Routes
 

@@ -10,11 +10,10 @@ Capture what worked, what failed, and collaborator preferences that help future 
 - App: FOIA idea board for a one-night event.
 - Stack: Next.js App Router, React, TypeScript, Tailwind CSS v4.
 - Runtime model: anonymous posting/upvoting, no accounts.
-- Current backend code uses Postgres-compatible SQL via `@neondatabase/serverless` and `DATABASE_URL`.
-- Vercel Blob store exists and is connected:
+- Backend storage now uses Vercel Blob via `@vercel/blob` and `BLOB_READ_WRITE_TOKEN`.
+- Vercel Blob store connected:
   - Store name: `foia.fun-blob`
-  - Env var available in `development`, `preview`, `production`: `BLOB_READ_WRITE_TOKEN`
-  - Note: app code has not yet been migrated from SQL to Blob.
+  - Env var expected in `development`, `preview`, `production`: `BLOB_READ_WRITE_TOKEN`
 
 ## Repo Structure
 
@@ -23,7 +22,7 @@ Capture what worked, what failed, and collaborator preferences that help future 
 - `src/app/api/ideas/[ideaId]/comments`: list/create comments.
 - `src/app/api/votes`: anonymous vote endpoint.
 - `src/components/foia-board.tsx`: main UI board.
-- `src/lib/db.ts`: SQL data layer and schema bootstrap.
+- `src/lib/db.ts`: Blob-backed data access layer.
 - `src/lib/voter.ts`: anonymous cookie key logic.
 - `run.sh`: local run wrapper (`dev`, `build`, `start`, `lint`).
 
@@ -61,19 +60,20 @@ npm run start
 - `vercel integration list` may report `No resources found` even when a store exists.
 - Reliable checks:
   - `vercel env pull <file> --environment=<env> --scope pierce403-projects` then inspect keys for `BLOB_READ_WRITE_TOKEN`.
-  - Vercel storage API (with CLI auth token) can show exact store/project links.
+  - Vercel storage API can show exact store/project links.
 
 ## Known Pitfalls
 
-- `@vercel/postgres` is deprecated for new setups; current code uses Neon driver instead.
-- Missing `DATABASE_URL` will break existing API routes until migrated to Blob.
+- If `BLOB_READ_WRITE_TOKEN` is missing, API routes that write/read data will fail.
+- Blob list operations are eventually consistent and can be slower than a relational DB for large datasets.
+- Voting uniqueness is enforced per target+browser key via deterministic vote blob paths.
 - This project currently has no account/auth layer by design; do not introduce login requirements unless requested.
 
 ## Collaboration Cues
 
 - User prefers direct, practical execution.
 - User explicitly requested React + Tailwind + TypeScript.
-- User asked for AGENTS documentation quality informed by recurse.bot.
+- User requested AGENTS documentation quality informed by recurse.bot.
 - User requested that work be committed and pushed after completion.
 
 ## Git Workflow Requirement
