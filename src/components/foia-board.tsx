@@ -1,6 +1,6 @@
 "use client";
 
-import { type FormEvent, useCallback, useEffect, useMemo, useState } from "react";
+import { type FormEvent, useEffect, useMemo, useState } from "react";
 import type { Comment, Idea, VoteTargetType } from "@/lib/types";
 
 type VoteApiResponse = {
@@ -31,7 +31,7 @@ function formatTimestamp(timestamp: string): string {
   return dateFormatter.format(new Date(timestamp));
 }
 
-export default function FoiaBoard() {
+export default function FoiaBoard({ readOnly = true }: { readOnly?: boolean }) {
   const [ideas, setIdeas] = useState<Idea[]>([]);
   const [commentsByIdea, setCommentsByIdea] = useState<Record<string, Comment[]>>({});
   const [openIdeas, setOpenIdeas] = useState<Record<string, boolean>>({});
@@ -55,31 +55,6 @@ export default function FoiaBoard() {
     }));
   }
 
-  const loadIdeas = useCallback(async () => {
-    const actionKey = "ideas:load";
-    setBusy(actionKey, true);
-
-    try {
-      const response = await fetch("/api/ideas", { cache: "no-store" });
-      const payload = (await response.json()) as
-        | { ideas: Idea[] }
-        | { error: string };
-
-      if (!response.ok || !("ideas" in payload)) {
-        throw new Error(
-          "error" in payload ? payload.error : "Failed to load ideas.",
-        );
-      }
-
-      setIdeas(sortIdeas(payload.ideas));
-    } catch (error) {
-      const message = error instanceof Error ? error.message : "Failed to load ideas.";
-      setNotice(message);
-    } finally {
-      setBusy(actionKey, false);
-      setLoadingIdeas(false);
-    }
-  }, []);
 
   async function loadComments(ideaId: string) {
     const actionKey = `comments:load:${ideaId}`;
@@ -313,11 +288,31 @@ export default function FoiaBoard() {
   }
 
   useEffect(() => {
-    void loadIdeas();
-  }, [loadIdeas]);
+    const controller = new AbortController();
+    fetch("/api/ideas", { cache: "no-store", signal: controller.signal })
+      .then(async (response) => {
+        const payload = (await response.json()) as { ideas: Idea[] } | { error: string };
+        if (!response.ok || !("ideas" in payload)) {
+          throw new Error("error" in payload ? payload.error : "Failed to load ideas.");
+        }
+        if (!controller.signal.aborted) setIdeas(sortIdeas(payload.ideas));
+      })
+      .catch((error: unknown) => {
+        if (!controller.signal.aborted) setNotice(error instanceof Error ? error.message : "Failed to load ideas.");
+      })
+      .finally(() => {
+        if (!controller.signal.aborted) setLoadingIdeas(false);
+      });
+    return () => controller.abort();
+  }, []);
 
   return (
     <div className="space-y-6">
+      {readOnly && (
+        <section role="status" className="rounded-xl border border-amber-300/30 bg-amber-200/10 px-4 py-3 text-sm text-amber-100">
+          Posting and voting are temporarily paused while we move the board. You can still read all ideas and comments.
+        </section>
+      )}
       <section className="rounded-2xl border border-cyan-300/20 bg-slate-900/70 p-4 shadow-[0_20px_65px_-40px_rgba(34,211,238,0.95)] backdrop-blur sm:p-6">
         <form className="space-y-3" onSubmit={submitIdea}>
           <h2 className="text-lg font-semibold text-slate-100 sm:text-xl">
@@ -345,7 +340,7 @@ export default function FoiaBoard() {
             </p>
             <button
               type="submit"
-              disabled={!!busyByAction["idea:create"]}
+              disabled={readOnly || !!busyByAction["idea:create"]}
               className="rounded-full border border-cyan-300/70 bg-cyan-300/15 px-4 py-2 text-sm font-medium text-cyan-100 transition hover:bg-cyan-300/25 disabled:cursor-not-allowed disabled:opacity-60"
             >
               {busyByAction["idea:create"] ? "Posting..." : "Post idea"}
@@ -421,7 +416,7 @@ export default function FoiaBoard() {
                 <div className="flex gap-2 sm:flex-col sm:items-end">
                   <button
                     type="button"
-                    disabled={!!busyByAction[`vote:idea:${idea.id}`]}
+                    disabled={readOnly || !!busyByAction[`vote:idea:${idea.id}`]}
                     onClick={() => void vote("idea", idea.id)}
                     className="rounded-full border border-cyan-300/70 bg-cyan-300/15 px-3 py-1.5 text-sm font-medium text-cyan-100 transition hover:bg-cyan-300/25 disabled:cursor-not-allowed disabled:opacity-60"
                   >
@@ -457,7 +452,7 @@ export default function FoiaBoard() {
                     />
                     <button
                       type="submit"
-                      disabled={!!busyByAction[`comment:create:${idea.id}`]}
+                      disabled={readOnly || !!busyByAction[`comment:create:${idea.id}`]}
                       className="rounded-lg border border-cyan-300/70 bg-cyan-300/15 px-3 py-2 text-sm font-medium text-cyan-100 transition hover:bg-cyan-300/25 disabled:cursor-not-allowed disabled:opacity-60"
                     >
                       {busyByAction[`comment:create:${idea.id}`]
@@ -490,7 +485,7 @@ export default function FoiaBoard() {
                             </div>
                             <button
                               type="button"
-                              disabled={!!busyByAction[`vote:comment:${comment.id}`]}
+                              disabled={readOnly || !!busyByAction[`vote:comment:${comment.id}`]}
                               onClick={() => void vote("comment", comment.id, idea.id)}
                               className="self-start rounded-full border border-cyan-300/70 bg-cyan-300/10 px-3 py-1 text-xs text-cyan-100 transition hover:bg-cyan-300/20 disabled:cursor-not-allowed disabled:opacity-60"
                             >

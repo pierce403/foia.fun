@@ -85,3 +85,26 @@ When you complete requested work in this repo:
 3. Push to the current remote branch.
 
 If push fails due to auth/remote restrictions, report the exact failure and next needed action.
+
+## Cloudflare migration update (2026-10-12)
+
+The Cloudflare port uses vinext plus native D1. Follow README and
+`docs/cloudflare-migration.md`; earlier Vercel notes above describe the recovery
+source. Do not pull secret values for inventory. The Blob token belongs only in
+private migration processes and never in Cloudflare runtime or GitHub.
+
+- Use Node 22.23.3 and pinned package-lock dependencies.
+- Run lint, typecheck, `npm test`, and `npm run check:deploy` before publication.
+- Production publishing belongs to native Workers Builds; do not overlap manual
+  deployment. Vercel Git builds are disabled, but old deployments still exist.
+- Preserve the exact `foia_voter` cookie and every existing voter key. The cookie
+  is unsigned, despite the earlier README wording; do not reset identities.
+- D1 IDs are placeholders until verified provisioning. Production starts read-only;
+  do not enable writes before the frozen final copy and full reconciliation.
+- Never attach production D1 to previews or run localhost-only synthetic mutation
+  checks against production. Keep private snapshots in ignored mode-700 directories.
+- The obsolete static prototype lives in `legacy/`; moving it back to root
+  `index.html` shadows the real App Router homepage in Vite dev.
+- During delegated migration preparation, the coordinator owns pushing, resource
+  provisioning, DNS, source-data transfer, freeze and final cutover. Local focused
+  commits are handed back before those actions.

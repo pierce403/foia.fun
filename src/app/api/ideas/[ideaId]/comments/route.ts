@@ -1,3 +1,4 @@
+import { isReadOnly, maintenanceResponse } from "@/lib/maintenance";
 import { NextResponse } from "next/server";
 import { createComment, ideaExists, listComments } from "@/lib/db";
 import { asTrimmedString, isValidUuid } from "@/lib/validation";
@@ -37,6 +38,7 @@ export async function GET(_request: Request, context: RouteContext) {
 }
 
 export async function POST(request: Request, context: RouteContext) {
+  if (isReadOnly()) return maintenanceResponse();
   const { ideaId } = await context.params;
 
   if (!isValidUuid(ideaId)) {

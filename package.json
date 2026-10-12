@@ -3,25 +3,45 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "eslint"
+    "dev": "vite dev",
+    "build": "vite build",
+    "start": "vite preview",
+    "lint": "eslint",
+    "typecheck": "tsc --noEmit",
+    "test": "tsx --test tests/*.test.ts",
+    "types": "wrangler types --include-runtime=false",
+    "check:deploy": "npm run build && wrangler deploy --dry-run",
+    "deploy": "node scripts/check-deployment.mjs && wrangler d1 migrations apply DB --remote && wrangler deploy",
+    "migration": "node scripts/migration.mjs",
+    "test:http": "node scripts/test-http.mjs"
   },
   "dependencies": {
-    "@vercel/blob": "^2.3.0",
-    "next": "16.1.6",
-    "react": "19.2.3",
-    "react-dom": "19.2.3"
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
+    "vinext": "1.1.0"
   },
   "devDependencies": {
-    "@tailwindcss/postcss": "^4",
-    "@types/node": "^20",
-    "@types/react": "^19",
-    "@types/react-dom": "^19",
-    "eslint": "^9",
-    "eslint-config-next": "16.1.6",
-    "tailwindcss": "^4",
-    "typescript": "^5"
+    "@cloudflare/vite-plugin": "1.63.1",
+    "@cloudflare/workers-types": "5.20261012.1",
+    "@tailwindcss/postcss": "4.2.1",
+    "@types/node": "20.19.34",
+    "@types/react": "19.2.14",
+    "@types/react-dom": "19.2.3",
+    "@vercel/blob": "2.8.1",
+    "@vitejs/plugin-rsc": "0.5.36",
+    "eslint": "9.39.3",
+    "eslint-config-next": "16.4.0",
+    "miniflare": "5.20261006.1-alpha",
+    "next": "16.4.0",
+    "react-server-dom-webpack": "19.3.0",
+    "tailwindcss": "4.2.1",
+    "tsx": "4.23.15",
+    "typescript": "5.9.3",
+    "vite": "8.3.4",
+    "wrangler": "4.149.0"
+  },
+  "type": "module",
+  "engines": {
+    "node": "22.x"
   }
 }

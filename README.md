@@ -1,56 +1,52 @@
 # foia.fun
 
-Anonymous FOIA brainstorming webapp for a live event night.
+Anonymous FOIA brainstorming board: submit ideas and comments, and upvote either
+without an account. The Cloudflare port uses the existing React App Router UI,
+vinext, and D1. Git pushes to the configured production branch are published by
+Cloudflare Workers Builds. Deployment credentials stay in Cloudflare.
 
-## Stack
+## Development
 
-- Next.js (React + TypeScript)
-- Tailwind CSS
-- Vercel Blob (`@vercel/blob`)
-
-## Features
-
-- Anonymous idea submission (no accounts)
-- Anonymous comments on ideas
-- Upvotes on ideas and comments
-- One-vote-per-target per browser via signed server cookie
-- Blob-backed persistence for ideas, comments, and votes
-
-## Local Setup
-
-1. Install dependencies:
+Use Node 22 (`.nvmrc` pins 22.23.3) and the checked-in npm lockfile.
 
 ```bash
-npm install
+npm ci
+npm run types
+npx wrangler d1 migrations apply DB --local --env staging
+CLOUDFLARE_ENV=staging npm run dev
 ```
 
-2. Pull environment variables from Vercel:
+Staging uses a separate D1 binding and permits local synthetic writes. The default
+configuration starts read-only. Both checked-in D1 IDs are placeholders until the
+migration coordinator provisions and verifies the two separate databases. No
+command in the development instructions accesses remote D1.
 
 ```bash
-vercel env pull .env.local
+npm run lint
+npm run typecheck
+npm test
+npm run check:deploy
 ```
 
-3. Start dev server:
+`npm test` exercises real local D1 semantics, import validation, duplicate vote
+races and rollback conversion. `check:deploy` builds and packages without publishing.
+See [the migration runbook](docs/cloudflare-migration.md) for HTTP smoke checks,
+private data transfer and production cutover.
 
-```bash
-npm run dev
-# or
-./run.sh dev
-```
+## API and identity
 
-App runs at `http://localhost:3000`.
+- `GET /api/ideas` lists ideas; `POST /api/ideas` creates an idea.
+- `GET /api/ideas/:ideaId/comments` lists comments; POST creates a comment.
+- `POST /api/votes` returns `added` (201), `already_voted` (200), or a missing-target
+  error (404). Uniqueness is `(target type, target ID, browser key)` in D1.
+- `foia_voter` is an opaque, unsigned, host-only browser cookie. It is HttpOnly,
+  SameSite=Lax, Secure in production, and lasts seven days. Existing values remain
+  valid after migration. It is not proof of a unique person.
+- Ideas sort by vote count descending, then newest; comments use the same order.
+- During migration, `FOIA_READ_ONLY=true` preserves reads and rejects every
+  mutation with 503 and `Retry-After: 60`. Only the exact value `false` enables writes.
 
-## Vercel Deploy
-
-1. Import this repo into Vercel.
-2. Connect Vercel Blob storage to the project.
-3. Confirm `BLOB_READ_WRITE_TOKEN` exists for `development`, `preview`, and `production`.
-4. Deploy.
-
-## API Routes
-
-- `GET /api/ideas`
-- `POST /api/ideas`
-- `GET /api/ideas/:ideaId/comments`
-- `POST /api/ideas/:ideaId/comments`
-- `POST /api/votes`
+`legacy/original-static-index.html` preserves the earlier static prototype. It is
+not a runtime entrypoint; leaving it at the root shadows App Router in Vite dev.
+The previous Vercel deployment and Blob store remain the recovery source until
+live reconciliation and rollback readiness are verified.

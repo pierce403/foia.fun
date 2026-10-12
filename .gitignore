@@ -41,3 +41,9 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 .env*.local
+
+/dist/
+.vinext/
+.wrangler/
+.dev.vars*
+.migration-private/

@@ -1,3 +1,4 @@
+import { isReadOnly, maintenanceResponse } from "@/lib/maintenance";
 import { NextResponse } from "next/server";
 import { createIdea, listIdeas } from "@/lib/db";
 import { asTrimmedString } from "@/lib/validation";
@@ -21,6 +22,7 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
+  if (isReadOnly()) return maintenanceResponse();
   let payload: Record<string, unknown>;
 
   try {

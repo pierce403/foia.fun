@@ -1,9 +1,11 @@
+import { isReadOnly, maintenanceResponse } from "@/lib/maintenance";
 import { NextResponse } from "next/server";
 import { addVote } from "@/lib/db";
 import { attachVoterCookie, getOrCreateVoterKey } from "@/lib/voter";
 import { asTrimmedString, isValidUuid, isVoteTargetType } from "@/lib/validation";
 
 export async function POST(request: Request) {
+  if (isReadOnly()) return maintenanceResponse();
   let payload: Record<string, unknown>;
 
   try {

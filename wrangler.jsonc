@@ -1,0 +1,30 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "foia-fun",
+  "main": "vinext/server/app-router-entry",
+  "compatibility_date": "2026-10-12",
+  "compatibility_flags": ["nodejs_compat"],
+  "workers_dev": true,
+  "preview_urls": false,
+  "assets": { "not_found_handling": "none" },
+  "vars": { "FOIA_READ_ONLY": "true" },
+  "d1_databases": [{
+    "binding": "DB",
+    "database_name": "foia-fun-production",
+    "database_id": "00000000-0000-0000-0000-000000000000",
+    "migrations_dir": "migrations"
+  }],
+  "observability": { "enabled": true, "traces": { "enabled": true } },
+  "env": {
+    "staging": {
+      "name": "foia-fun-staging",
+      "vars": { "FOIA_READ_ONLY": "false" },
+      "d1_databases": [{
+        "binding": "DB",
+        "database_name": "foia-fun-staging",
+        "database_id": "00000000-0000-0000-0000-000000000001",
+        "migrations_dir": "migrations"
+      }]
+    }
+  }
+}
