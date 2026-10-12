@@ -37,7 +37,7 @@ production immutable URL, and every discovered preview/branch/immutable alias.
 Include encoded path spellings and a non-API path with the same harmless body.
 Require a Vercel WAF denial (normally 403). Vercel documents WAF evaluation before
 deployment protection, so protected aliases should also return the WAF denial.
-A remaining401 proves deployment protection only and does not satisfy the freeze
+A remaining 401 proves deployment protection only and does not satisfy the freeze
 gate; inspect rule scope/order before proceeding.
 A 400 from application validation proves the freeze is missing.
 Also verify GET homepage/ideas/comments still succeeds on public aliases.

@@ -46,6 +46,30 @@ Restart the local Worker without the var override and run the HTTP script with
 Production verification uses read-only requests and browser checks; never point
 this synthetic-write script at a live domain.
 
+## Isolated staging HTTPS verification
+
+With explicit staging publication authorization, build with
+`CLOUDFLARE_ENV=staging npm run build`. Before deploying the generated config,
+assert its Worker name is `foia-fun-staging`, routes are empty, previews disabled,
+and its sole D1 binding is the verified staging ID. Never use `npm run deploy`
+for this artifact: the production guard intentionally rejects it.
+
+The staging-only driver preserves the localhost guard in `test-http.mjs`:
+
+```bash
+node scripts/test-staging.mjs https://foia-fun-staging.bcrt43.workers.dev \
+  /absolute/private/evidence/new-staging-run.json
+```
+
+It refuses every other host, requires an initially empty board, writes each
+created fixture ID immediately to a new private evidence file, and checks secure
+cookies, status codes and a 16-request duplicate-vote race. Wait for a newly
+created workers.dev hostname to become ready before invoking it. Inspect any
+failed-run evidence before retrying: partial fixtures require scoped cleanup.
+After browser checks, remove only those recorded fixture IDs and their votes,
+then confirm the isolated database is empty. Rebuild without `CLOUDFLARE_ENV`
+afterward so the local generated artifact again matches production source.
+
 ## Private data tooling
 
 `npm run migration -- ...` never prints credentials, voter keys or object contents.

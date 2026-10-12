@@ -78,14 +78,36 @@ records, secret values, or live writes were inspected during this preparation.
 - Added ordinary Worker routes for `foia.fun/*` and `www.foia.fun/*`, leaving
   staging with an explicit empty route list. DNS and publication remain with
   the migration coordinator; production is still read-only.
-- Exact-host middleware redirects www to HTTPS apex with308 and preserves the
+- Exact-host middleware redirects www to HTTPS apex with 308 and preserves the
   path and query. Built Worker tests passed for root, nested/missing paths,
-  encoded queries and POST. Apex still returns200, a genuine404 and all three
-  read-only503 responses. Lint, types and build pass.
+  encoded queries and POST. Apex still returns 200, a genuine 404 and all three
+  read-only 503 responses. Lint, types and build pass.
 - Tested `next.config` host redirects first, but vinext dropped query strings;
   retained request middleware instead. Wrangler local testing needs explicit
   `--local-upstream www.foia.fun`: its default route origin overrides Host.
 - Prepared source WAF rule now denies POST/PUT/PATCH/DELETE project-wide without
   a path condition, covering encoded/rewritten paths. No WAF activation occurred.
   Fresh inventory found three READY deployments and six aliases; all three
-  deployment configs have a300-second function timeout.
+  deployment configs have a 300-second function timeout.
+
+## 2026-10-12: isolated staging HTTPS acceptance
+
+- Built the staging environment from 4fc95b0 and verified generated name, empty
+  routes, sole staging D1 binding and disabled previews before explicit staging
+  deployment. Active version: `6f0e0359-a030-4baf-b49a-21876b76dd9a` at
+  `https://foia-fun-staging.bcrt43.workers.dev`. Production native builds and
+  production data were untouched.
+- Added an exact-host staging-only driver; the localhost-only script is unchanged.
+  HTTPS checks passed: home, real404, uncached reads, invalid 400/missing 404,
+  idea/comment 201, Secure/HttpOnly/SameSite=Lax/seven-day host-only cookie,
+  duplicate 200 without a new cookie, and sixteen concurrent same-cookie requests
+  yielding exactly one 201 and fifteen already-voted 200 responses.
+- Browser checks rendered the controlled fixture/comment, increased a vote once,
+  then retained its count with the duplicate-vote notice on the second click.
+  Private screenshot, API metadata and test reports are in coordination recovery
+  evidence. Only the exact created one idea, one comment and three votes were
+  removed afterward; remote staging counts returned to zero in all tables.
+- The first request immediately after new-host deployment returned 404 before
+  propagation; it created no records. Browser readiness and a fresh run passed.
+  Python urllib's default user agent was blocked 1010 during diagnosis; Node and
+  the actual browser succeeded. No network or protection setting was weakened.

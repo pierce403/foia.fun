@@ -108,3 +108,10 @@ private migration processes and never in Cloudflare runtime or GitHub.
 - During delegated migration preparation, the coordinator owns pushing, resource
   provisioning, DNS, source-data transfer, freeze and final cutover. Local focused
   commits are handed back before those actions.
+- Staging HTTPS tests have a separate exact-host driver; preserve the localhost
+  guard in `test-http.mjs`. Use synthetic data only and clean recorded fixture IDs.
+- A staging build changes the generated deployment config. Prove the generated
+  Worker name, D1 ID and empty routes before staging publication, then rebuild
+  production locally afterward. Never retarget a built artifact with a CLI flag.
+- Host-specific redirect verification in Wrangler requires `--local-upstream`;
+  normal Host headers alone do not override its configured route origin.

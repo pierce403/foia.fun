@@ -11,8 +11,12 @@
 
 Verified locally: lint, types, ten real-D1 tests, development and built-Worker HTTP
 suites, cookie flags, import/rollback conversion, genuine 404 and package dry run.
-Built Worker checks also verify www308, encoded query preservation, untouched
-apex routing and all three maintenance503 gates.
+Built Worker checks also verify www 308, encoded query preservation, untouched
+apex routing and all three maintenance 503 gates.
+
+Verified isolated staging over HTTPS: status contract, secure voter cookie,
+sixteen-request duplicate race, rendered comment and browser duplicate notice.
+All exact synthetic fixtures were removed; staging returned to zero records.
 
 Pending live verification: distinct provisioned databases, complete frozen-source
 copy, exact native build/version, domain/TLS/browser checks and post-cutover state.
