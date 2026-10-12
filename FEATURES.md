@@ -19,5 +19,10 @@ Verified isolated staging over HTTPS: status contract, secure voter cookie,
 sixteen-request duplicate race, rendered comment and browser duplicate notice.
 All exact synthetic fixtures were removed; staging returned to zero records.
 
-Pending live verification: distinct provisioned databases, complete frozen-source
-copy, exact native build/version, domain/TLS/browser checks and post-cutover state.
+Distinct production, staging and rehearsal databases are provisioned. The first
+source-freeze window was safely aborted before final copying; original Vercel
+serving is restored, with Cloudflare production still empty/read-only.
+
+Pending live acceptance: authenticated old-source freeze, complete stable final
+copy and reconciliation, exact native release identity, apex hosting cutover and
+post-cutover write state. The independent www redirect is live and verified.

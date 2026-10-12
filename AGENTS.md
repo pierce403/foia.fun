@@ -99,7 +99,7 @@ private migration processes and never in Cloudflare runtime or GitHub.
   deployment. Vercel Git builds are disabled, but old deployments still exist.
 - Preserve the exact `foia_voter` cookie and every existing voter key. The cookie
   is unsigned, despite the earlier README wording; do not reset identities.
-- D1 IDs are placeholders until verified provisioning. Production starts read-only;
+- Production, rehearsal and staging D1 IDs are provisioned and distinct. Production stays read-only;
   do not enable writes before the frozen final copy and full reconciliation.
 - Never attach production D1 to previews or run localhost-only synthetic mutation
   checks against production. Keep private snapshots in ignored mode-700 directories.
@@ -115,3 +115,10 @@ private migration processes and never in Cloudflare runtime or GitHub.
   production locally afterward. Never retarget a built artifact with a CLI flag.
 - Host-specific redirect verification in Wrangler requires `--local-upstream`;
   normal Host headers alone do not override its configured route origin.
+
+- Source-freeze verification must account for Vercel deployment protection before
+  project WAF. Unauthenticated401 does not prove authenticated method denial.
+  Do not invoke CLI curl blindly: it may create a persistent bypass credential.
+- The first window was safely aborted; original Vercel writes are restored and
+  production D1 remains empty/read-only. Saved enabled WAF version2/rules[] is
+  the recovery baseline for any later approved freeze, not the historical null.

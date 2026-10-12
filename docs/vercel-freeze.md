@@ -1,14 +1,35 @@
-# Prepared Vercel freeze (not activated)
+# Vercel freeze procedure and window evidence
 
-2026-10-12: documented GET `/v1/security/firewall/config` returned
-`active: null`, `draft: null`, `versions: []` for FOIA. The `/active` read
-returned 404 `Config not found`. Recovery JSON and prepared request bodies are
-private in the coordination project `work/vercel-migration/foia-recovery/`.
-No firewall configuration was created or changed.
+The first approved window on 2026-10-12 was safely aborted before final copying.
+Maintenance and the project-wide method rule were activated, but protected
+immutable aliases returned401 before project WAF. Authenticated denial remained
+unverified. At16:31:35UTC the exact original Vercel deployment was restored,
+public reads200 and invalid empty POST400 passed, and the sole temporary rule was
+removed. WAF is now enabled, version2, with no custom rules. Source counts remain
+one idea, two comments and two votes; Cloudflare production D1 is empty/read-only.
+No final export/import or bypass credential creation occurred.
 
-The coordinator must re-read the configuration immediately before cutover and
-abort this initial-config recipe if active or draft is no longer null. Preserve
-any intervening changes. The prepared PUT is an activation operation, not a dry
+The coordinator subsequently repaired www through the existing Cloudflare
+redirect middleware. HTTPS www preserves path/query with308 to the original
+Vercel apex; apex remains DNS-only and writable. Historical NXDOMAIN evidence
+must not be used as a current www gate.
+
+A scoped temporary-authentication probe is prepared and offline-tested in the
+private coordination recovery folder, pending owner approval and a new window.
+It must prove authenticated GET200 followed by method403 on every old host,
+revoke its exact temporary credential, and confirm the empty credential baseline.
+No credential creation is implied by this document. Private command/review notes:
+`foia-authenticated-probe-review.md` and `foia-cutover-review.md`.
+
+The initial configuration read, before the first attempt, returned active:null,
+draft:null and versions:[]. Those initial observations and bodies are preserved
+in `work/vercel-migration/foia-recovery/`; they are historical now.
+
+The coordinator must re-read configuration immediately before a later cutover.
+Match the complete active state to saved `window-abort-waf-empty-confirmation.json`
+(enabled, version2, no custom rules), require no draft, and revise the private
+activation helper for that exact reviewed baseline. The original null-only helper
+intentionally refuses reactivation. Preserve any intervening changes. The prepared PUT is an activation operation, not a dry
 run. Its endpoint is `/v1/security/firewall/config` with `projectId` and `teamId`
 query parameters. Use the stored private `vercel-waf-freeze-put.json` body:
 

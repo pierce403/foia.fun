@@ -137,3 +137,33 @@ records, secret values, or live writes were inspected during this preparation.
   it does not prove authenticated write blocking. Canonical `/api//votes` returns
   same-host 308 to `/api/votes`; repeating POST with `{}` reaches 403 on public
   aliases and 401 on protected aliases. No valid write payload was sent.
+
+
+## 2026-10-12: safe abort and restored original site
+
+- The authenticated old-alias gate remained unresolved while explicit approval
+  for a temporary project bypass credential was pending. Coordinator ended the
+  window instead of leaving users in maintenance. No final Blob export, D1 import
+  or bypass credential creation occurred.
+- At16:31:35UTC original `dpl_FBS4XQpygwFR4LJm7N4MDtKhBR39`/source27cfd6f was
+  verified on production. Homepage/ideas/comments return200 with no maintenance
+  notice. The three invalid empty POSTs return400 without Set-Cookie; existing
+  data remains one idea, two comments and two votes. No valid writes were sent.
+- Before restoring writes, production D1 was verified empty twice, Cloudflare
+  remained read-only, bypass metadata was empty, and the exact sole temporary
+  rule was verified then removed. Enabled WAF version2 now has rules[]. Original
+  null-WAF metadata cannot be recreated by removing a custom rule. Later freeze
+  activation requires the saved complete empty baseline and a fresh draft check.
+- Coordinator repaired www separately at16:32UTC using the existing Worker
+  middleware and a proxied record. HTTPS308 preserves path/query to the Vercel
+  apex; HTTP upgrades301; browser follows to the original writable board. Apex
+  remains DNS-only. New www verification accepts only this precise redirect or
+  authoritative NXDOMAIN, with authenticated proof for its Vercel immutable
+  backing. No DNS mutation was performed by this delegated checkout owner.
+- Prepared a project-scoped memory-only temporary-authentication probe and19
+  mocked tests. It requires empty bypass metadata, exact audited hosts/sources,
+  active freeze/read-only gates, authenticated GET200 then mutation403, exact
+  finally revocation, zero remaining credentials and revoked-header401. It was
+  independently reviewed but never executed. API schema permits32 alphanumeric
+  characters (~190.5bits), not arbitrary256bit secret encodings. Persistent API
+  failure or host termination remains an explicit cleanup failure gate.
