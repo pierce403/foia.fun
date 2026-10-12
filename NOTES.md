@@ -59,3 +59,16 @@ records, secret values, or live writes were inspected during this preparation.
 - The rehearsal database must never be bound to a published preview Worker.
   Production cutover, DNS, native Git connection and data freeze remain coordinator
   work. No push, deployment, source-data write or production database change occurred.
+
+## 2026-10-12: empty production database and freeze preparation
+
+- Listed FOIA databases first, then created `foia-fun-production`
+  (`2440fefc-b001-4af0-9388-73a0199b3d67`, WNAM). Applied `0001_board.sql`;
+  remote count queries confirmed zero ideas, comments and votes. Source binding
+  now uses this isolated ID, with `FOIA_READ_ONLY=true`. No source copy was
+  imported into production and no Worker was deployed.
+- Node22 type generation, typecheck and production build pass with the new ID.
+- Vercel firewall read returned no active/draft/version configuration. Prepared
+  local-only project-wide freeze and removal bodies in the private recovery
+  folder. Current project/production function timeout is 300 seconds; require
+  request drain and stable uncached exports. See `docs/vercel-freeze.md`. No firewall write was submitted.

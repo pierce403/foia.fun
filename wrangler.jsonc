@@ -18,7 +18,7 @@
     {
       "binding": "DB",
       "database_name": "foia-fun-production",
-      "database_id": "00000000-0000-0000-0000-000000000000",
+      "database_id": "2440fefc-b001-4af0-9388-73a0199b3d67",
       "migrations_dir": "migrations"
     }
   ],
