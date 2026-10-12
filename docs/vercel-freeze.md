@@ -14,8 +14,9 @@ query parameters. Use the stored private `vercel-waf-freeze-put.json` body:
 
 - `firewallEnabled: true`.
 - Exactly one active rule, action `mitigate.action: deny`.
-- One AND condition group: `method inc [POST, PUT, PATCH, DELETE]` plus
-  `path pre /api/`.
+- One condition group: `method inc [POST, PUT, PATCH, DELETE]` across the
+  entire project. Do not add a path condition: encoded or rewritten API paths
+  must encounter the same freeze.
 - No hostname, environment, IP, cookie or header restrictions. This applies to
   project traffic, including current production and older preview/deployment
   aliases; do not narrow the rule to the custom domain.
@@ -33,9 +34,11 @@ At activation, record the returned active version and verify the active read
 has exactly this enabled rule before the final data copy. Send harmless empty
 JSON to all three mutation routes on the apex, www, production alias,
 production immutable URL, and every discovered preview/branch/immutable alias.
-Require a Vercel WAF denial (normally 403). Record a protected alias's public401
-separately: it proves deployment protection, not authenticated WAF enforcement.
-Where authenticated access exists, repeat the harmless probe in that context.
+Include encoded path spellings and a non-API path with the same harmless body.
+Require a Vercel WAF denial (normally 403). Vercel documents WAF evaluation before
+deployment protection, so protected aliases should also return the WAF denial.
+A remaining401 proves deployment protection only and does not satisfy the freeze
+gate; inspect rule scope/order before proceeding.
 A 400 from application validation proves the freeze is missing.
 Also verify GET homepage/ideas/comments still succeeds on public aliases.
 Do not use valid synthetic post/vote bodies on the source.
@@ -65,6 +68,7 @@ Sources checked 2026-10-12:
 - https://raw.githubusercontent.com/vercel/sdk/main/src/models/putfirewallconfigop.ts
 - https://vercel.com/docs/vercel-firewall/vercel-waf/rule-configuration
 - https://vercel.com/docs/vercel-firewall/vercel-waf/usage-and-pricing
+- https://vercel.com/docs/vercel-firewall/firewall-concepts
 
 ## Safe baseline before activation
 

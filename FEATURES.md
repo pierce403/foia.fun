@@ -7,9 +7,12 @@
 - Composite vote uniqueness and transactional inserts prevent duplicate concurrent votes.
 - Read-only migration mode leaves reads available and rejects all mutations.
 - Production native Git uses tracked migrations; staging has a separate binding.
+- Exact www hostname redirects to HTTPS apex, preserving path and query.
 
 Verified locally: lint, types, ten real-D1 tests, development and built-Worker HTTP
 suites, cookie flags, import/rollback conversion, genuine 404 and package dry run.
+Built Worker checks also verify www308, encoded query preservation, untouched
+apex routing and all three maintenance503 gates.
 
 Pending live verification: distinct provisioned databases, complete frozen-source
 copy, exact native build/version, domain/TLS/browser checks and post-cutover state.

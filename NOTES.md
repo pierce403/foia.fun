@@ -72,3 +72,20 @@ records, secret values, or live writes were inspected during this preparation.
   local-only project-wide freeze and removal bodies in the private recovery
   folder. Current project/production function timeout is 300 seconds; require
   request drain and stable uncached exports. See `docs/vercel-freeze.md`. No firewall write was submitted.
+
+## 2026-10-12: domain route preparation and final freeze scope
+
+- Added ordinary Worker routes for `foia.fun/*` and `www.foia.fun/*`, leaving
+  staging with an explicit empty route list. DNS and publication remain with
+  the migration coordinator; production is still read-only.
+- Exact-host middleware redirects www to HTTPS apex with308 and preserves the
+  path and query. Built Worker tests passed for root, nested/missing paths,
+  encoded queries and POST. Apex still returns200, a genuine404 and all three
+  read-only503 responses. Lint, types and build pass.
+- Tested `next.config` host redirects first, but vinext dropped query strings;
+  retained request middleware instead. Wrangler local testing needs explicit
+  `--local-upstream www.foia.fun`: its default route origin overrides Host.
+- Prepared source WAF rule now denies POST/PUT/PATCH/DELETE project-wide without
+  a path condition, covering encoded/rewritten paths. No WAF activation occurred.
+  Fresh inventory found three READY deployments and six aliases; all three
+  deployment configs have a300-second function timeout.

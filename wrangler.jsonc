@@ -8,6 +8,10 @@
   ],
   "workers_dev": true,
   "preview_urls": false,
+  "routes": [
+    { "pattern": "foia.fun/*", "zone_name": "foia.fun" },
+    { "pattern": "www.foia.fun/*", "zone_name": "foia.fun" }
+  ],
   "assets": {
     "not_found_handling": "none"
   },
@@ -31,6 +35,7 @@
   "env": {
     "staging": {
       "name": "foia-fun-staging",
+      "routes": [],
       "vars": {
         "FOIA_READ_ONLY": "false"
       },
