@@ -33,8 +33,10 @@ At activation, record the returned active version and verify the active read
 has exactly this enabled rule before the final data copy. Send harmless empty
 JSON to all three mutation routes on the apex, www, production alias,
 production immutable URL, and every discovered preview/branch/immutable alias.
-Require a Vercel WAF denial (normally 403), or authentication protection on a
-protected alias; a 400 from application validation proves the freeze is missing.
+Require a Vercel WAF denial (normally 403). Record a protected alias's public401
+separately: it proves deployment protection, not authenticated WAF enforcement.
+Where authenticated access exists, repeat the harmless probe in that context.
+A 400 from application validation proves the freeze is missing.
 Also verify GET homepage/ideas/comments still succeeds on public aliases.
 Do not use valid synthetic post/vote bodies on the source.
 
@@ -63,3 +65,13 @@ Sources checked 2026-10-12:
 - https://raw.githubusercontent.com/vercel/sdk/main/src/models/putfirewallconfigop.ts
 - https://vercel.com/docs/vercel-firewall/vercel-waf/rule-configuration
 - https://vercel.com/docs/vercel-firewall/vercel-waf/usage-and-pricing
+
+## Safe baseline before activation
+
+Eight known project hosts were probed with POST `{}` against the ideas, votes,
+and invalid-UUID comments endpoints. These bodies cannot pass source validation.
+The apex and `foiafun.vercel.app` each returned400 for all three. Five private
+branch/immutable aliases each returned401 deployment protection. `www.foia.fun`
+failed DNS lookup on this network. No valid mutation bodies were sent. The
+private report is `foia-recovery/vercel-alias-write-baseline.json`. This is a
+baseline, not evidence of an active freeze; check DNS and re-run after activation.
