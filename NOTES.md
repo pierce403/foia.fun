@@ -186,3 +186,26 @@ records, secret values, or live writes were inspected during this preparation.
 - All 58 offline tests pass (19 lifecycle plus 39 window/phase), along with Python
   compilation and CLI parsing. No credential read, network mutation, new window,
   production push or app-code change occurred during this preparation.
+
+## 2026-10-12: writable release candidate, publication held
+
+- Prepared the production `FOIA_READ_ONLY=false` setting locally. This is the
+  only runtime change; production D1, staging isolation, routes, dependency pins
+  and native Git publishing configuration remain the verified configuration.
+- The coordinator has promoted source maintenance and activated the method
+  freeze. Authenticated mutation checks passed, but immediate revoked-header
+  rejection remains under investigation. No final source copy or production
+  D1 import has occurred at this preparation checkpoint.
+- Do not push or deploy this candidate until the coordinator confirms complete
+  freeze proof, stable final snapshots, exact D1 reconciliation and read-only
+  public route acceptance. A local flag or build does not establish live cutover.
+- After publication, verify the exact native build/version and uncached marker,
+  enabled browser controls and three invalid empty POST400 responses without
+  voter cookies. Keep Vercel frozen and send no accepted synthetic production
+  submissions. Existing public smoke tooling supports maintenance and writable
+  modes without creating records.
+- Node22.23.3 validation passes: regenerated binding types, lint, typecheck,
+  all10 local D1 tests, production build and Wrangler deployment dry run.
+  The generated artifact has the expected production D1, false flag, two routes
+  and disabled previews. Sandbox IPC/child-process restrictions required an
+  unsandboxed local validation retry; no remote deployment or import occurred.

@@ -16,7 +16,7 @@
     "not_found_handling": "none"
   },
   "vars": {
-    "FOIA_READ_ONLY": "true"
+    "FOIA_READ_ONLY": "false"
   },
   "d1_databases": [
     {

@@ -16,11 +16,15 @@ npx wrangler d1 migrations apply DB --local --env staging
 CLOUDFLARE_ENV=staging npm run dev
 ```
 
-Staging uses a separate D1 binding and permits local synthetic writes. The default
-configuration starts read-only. The production D1 ID remains a placeholder until verified provisioning. The staging
-D1 ID names the isolated synthetic-test database; private source copies belong only
-in the separate unpublished rehearsal database. No
-command in the development instructions accesses remote D1.
+Staging uses a separate D1 binding and permits local synthetic writes. Production,
+staging and private rehearsal databases have distinct verified IDs. Private source
+copies belong only in the unpublished rehearsal database. No command in the
+development instructions accesses remote D1.
+
+The local release candidate enables production writes. Publication remains on
+hold until source freeze verification, final-copy reconciliation and read-only
+custom-host acceptance are complete. The coordinator owns that release; local
+configuration is not evidence of the deployed state.
 
 ```bash
 npm run lint
