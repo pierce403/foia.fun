@@ -110,12 +110,13 @@ all vote records. Do not reset cookies or migrate only displayed vote totals.
 1. Complete the DNS authority move with Vercel still serving; rehearse this port
    against synthetic staging data. Inventory every project linked to the Blob
    store and every production/preview/old deployment that can write to it.
-2. Enter the approved brief read-only window. Apply a project-level Vercel WAF deny
-   for POST `/api/*`, without hostname/environment restrictions, ahead of bypass
-   rules. Check current feature availability and prove it covers old deployment
-   URLs and previews as well as the custom domain. Preserve current reads and show
-   a read-only notice where feasible. Stop every other linked writer. Do not assume
-   a new build's maintenance flag protects old immutable deployments.
+2. Enter the approved brief read-only window with the verified maintenance
+   deployment and notice. Apply a project-wide Vercel WAF deny for POST, PUT,
+   PATCH and DELETE without any path, hostname or environment restriction.
+   Follow [the exact freeze and verification procedure](vercel-freeze.md),
+   including encoded-path probes, current aliases and every old immutable
+   deployment. Preserve current reads and stop every other linked writer.
+   A new build's maintenance flag alone does not protect old immutable deployments.
 3. If a complete write freeze cannot be established while preserving reads, stop
    before final copy and coordinate the remaining control. Do not rotate the Blob
    token as an improvised freeze: that can also break reads.

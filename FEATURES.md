@@ -8,6 +8,7 @@
 - Read-only migration mode leaves reads available and rejects all mutations.
 - Production native Git uses tracked migrations; staging has a separate binding.
 - Exact www hostname redirects to HTTPS apex, preserving path and query.
+- Uncached `/deployment.json` exposes the exact revision embedded during build.
 
 Verified locally: lint, types, ten real-D1 tests, development and built-Worker HTTP
 suites, cookie flags, import/rollback conversion, genuine 404 and package dry run.

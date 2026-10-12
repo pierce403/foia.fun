@@ -111,3 +111,13 @@ records, secret values, or live writes were inspected during this preparation.
   propagation; it created no records. Browser readiness and a fresh run passed.
   Python urllib's default user agent was blocked 1010 during diagnosis; Node and
   the actual browser succeeded. No network or protection setting was weakened.
+
+## 2026-10-12: public build identity
+
+- `/deployment.json` returns `{project:"foia.fun", revision:<exact Git SHA>}`
+  with `Cache-Control: no-store`. Vite substitutes `CF_COMMIT_SHA` at build time,
+  falling back to the local Git HEAD, and rejects invalid revision strings.
+- The marker is a Worker route rather than a static asset so www host middleware
+  also redirects this path. Its response contains no data or runtime secrets.
+- Independent normal-DNS acceptance can compare this marker to the exact native
+  build/version evidence without printing idea or comment content.
