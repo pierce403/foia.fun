@@ -122,3 +122,8 @@ private migration processes and never in Cloudflare runtime or GitHub.
 - The first window was safely aborted; original Vercel writes are restored and
   production D1 remains empty/read-only. Saved enabled WAF version2/rules[] is
   the recovery baseline for any later approved freeze, not the historical null.
+
+- Prepared freeze tools use explicit restored-baseline mode and a current-window
+  receipt. Never accept protected401 without the exact authenticated proof,
+  matching live WAF/inventory, confirmed credential revocation and 900-second
+  freshness. Use the explicit read-only Cloudflare phase after DNS cutover.

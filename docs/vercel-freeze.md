@@ -14,8 +14,8 @@ redirect middleware. HTTPS www preserves path/query with308 to the original
 Vercel apex; apex remains DNS-only and writable. Historical NXDOMAIN evidence
 must not be used as a current www gate.
 
-A scoped temporary-authentication probe is prepared and offline-tested in the
-private coordination recovery folder, pending owner approval and a new window.
+The complete next-window helpers are prepared and offline-tested in the private
+coordination recovery folder, pending owner approval and a new window.
 It must prove authenticated GET200 followed by method403 on every old host,
 revoke its exact temporary credential, and confirm the empty credential baseline.
 No credential creation is implied by this document. Private command/review notes:
@@ -26,10 +26,12 @@ draft:null and versions:[]. Those initial observations and bodies are preserved
 in `work/vercel-migration/foia-recovery/`; they are historical now.
 
 The coordinator must re-read configuration immediately before a later cutover.
-Match the complete active state to saved `window-abort-waf-empty-confirmation.json`
-(enabled, version2, no custom rules), require no draft, and revise the private
-activation helper for that exact reviewed baseline. The original null-only helper
-intentionally refuses reactivation. Preserve any intervening changes. The prepared PUT is an activation operation, not a dry
+The activation helper now requires explicit `--baseline restored-v2`, matches
+the complete active state to pinned `window-abort-waf-empty-confirmation.json`
+(enabled, version 2, no custom rules), and checks draft:null twice before PUT.
+Any foreign rule, setting, new version or draft stops it. Explicit initial-null
+mode exists only for a reviewed pristine configuration; it is inappropriate for
+the current state. Preserve any intervening changes. The prepared PUT is an activation operation, not a dry
 run. Its endpoint is `/v1/security/firewall/config` with `projectId` and `teamId`
 query parameters. Use the stored private `vercel-waf-freeze-put.json` body:
 
@@ -70,6 +72,24 @@ A 400 from application validation proves the freeze is missing.
 Also verify GET homepage/ideas/comments still succeeds on public aliases.
 Do not use valid synthetic post/vote bodies on the source.
 
+The activation produces a current-window receipt only after confirming the live
+rule and unchanged inventory. Its random window ID and full WAF/inventory
+fingerprints bind the authentication probe and public verification. Explicit
+`--authenticated-proof` evidence must be no more than 900 seconds old, from after
+this activation, with the complete successful authenticated GET200/mutation403
+matrix, zero initial and final credentials, and revoked-header401. An older
+artifact, source/alias change, changed WAF, remaining credential or missing check
+fails. Live state is rechecked after the public probes. Protected401 is accepted
+only with this evidence; a public401 always fails.
+
+The verifier checks the repaired www independently with GET and empty POST,
+requiring exact Cloudflare308 to apex while preserving path/query and a known
+immutable Vercel backing. Historical NXDOMAIN is accepted only if freshly
+corroborated by both authorities. During a longer read-only Cloudflare cutover,
+explicit `--after-cloudflare-cutover` allows fresh authentication proof for all
+old Vercel hosts while requiring Cloudflare apex200/503 and www308. It never
+substitutes Cloudflare behavior for a Vercel source-host denial.
+
 The current project metadata and production deployment both report fluid compute
 with a 300-second function timeout. After confirming the freeze everywhere, allow
 at least 300 seconds for in-flight requests to drain. Then take two uncached
@@ -106,3 +126,13 @@ branch/immutable aliases each returned401 deployment protection. `www.foia.fun`
 failed DNS lookup on this network. No valid mutation bodies were sent. The
 private report is `foia-recovery/vercel-alias-write-baseline.json`. This is a
 baseline, not evidence of an active freeze; check DNS and re-run after activation.
+
+
+## Local preparation validation
+
+58 offline tests pass: 19 credential-lifecycle tests and 39 window/phase tests.
+These cover unknown creation/revocation outcomes, failed cleanup, foreign entries,
+stale or wrong-window proof, exact host/source/WAF drift, second-read draft drift
+before activation, canonical redirects and the post-DNS read-only phase. Python
+compilation and helper CLI parsing also pass. No live credential or next-window
+operation was executed as part of preparation; actual application code is unchanged.

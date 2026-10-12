@@ -167,3 +167,22 @@ records, secret values, or live writes were inspected during this preparation.
   independently reviewed but never executed. API schema permits32 alphanumeric
   characters (~190.5bits), not arbitrary256bit secret encodings. Persistent API
   failure or host termination remains an explicit cleanup failure gate.
+
+
+## 2026-10-12: executable next-window preparation
+
+- Completed local activation/proof helpers and the full private runbook. Explicit
+  restored-v2 mode requires the exact pinned complete empty baseline and fresh
+  draft-null checks before PUT. Successful activation records a random window ID
+  plus exact WAF and deployment-inventory fingerprints.
+- Public verification accepts protected401 only with explicit successful proof
+  for that window, no older than 900 seconds, complete authenticated checks,
+  zero credential metadata and confirmed revoked-header401. New rules, hosts,
+  source revisions, alias mappings, proof timestamps or credentials fail closed.
+- The separate post-DNS phase permits proof refresh while Cloudflare is read-only:
+  all old Vercel hosts still require authenticated denial, and Cloudflare requires
+  apex200/503 and exact www308. Safe-abort rule removal also binds the current
+  receipt, instead of assuming the first window's generated rule ID.
+- All 58 offline tests pass (19 lifecycle plus 39 window/phase), along with Python
+  compilation and CLI parsing. No credential read, network mutation, new window,
+  production push or app-code change occurred during this preparation.
