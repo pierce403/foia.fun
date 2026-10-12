@@ -17,8 +17,9 @@ CLOUDFLARE_ENV=staging npm run dev
 ```
 
 Staging uses a separate D1 binding and permits local synthetic writes. The default
-configuration starts read-only. Both checked-in D1 IDs are placeholders until the
-migration coordinator provisions and verifies the two separate databases. No
+configuration starts read-only. The production D1 ID remains a placeholder until verified provisioning. The staging
+D1 ID names the isolated synthetic-test database; private source copies belong only
+in the separate unpublished rehearsal database. No
 command in the development instructions accesses remote D1.
 
 ```bash

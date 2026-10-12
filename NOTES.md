@@ -38,3 +38,24 @@ Pending coordinator work: provision distinct production/staging D1; source Blob
 inventory and freeze; final private export/import/reconciliation; native Git
 connection; routes and DNS; managed TLS and public/browser verification. No source
 records, secret values, or live writes were inspected during this preparation.
+
+## 2026-10-12: isolated remote rehearsal
+
+- Created `foia-fun-staging` (`60a5b8f4-1a56-4c22-90e2-ded13911c786`)
+  and `foia-fun-rehearsal` (`b6d3ccef-0b16-4fd8-bb81-30e539fbb3df`) after
+  confirming their names were absent. Both have the tracked D1 schema. Production
+  remains unprovisioned. Only the staging ID is bound in source.
+- Eight simultaneous remote synthetic vote requests produced exactly one vote;
+  a missing target produced none. Only the known synthetic rows were removed;
+  zero synthetic records remain. No Worker was published.
+- Exported the scoped source Blob store using its selected credential solely in
+  process memory. The private preliminary copy has one idea, two comments and two
+  votes. Imported all five objects to the unpublished rehearsal D1, exported them,
+  and verified every record plus byte-exact reverse conversion of all five objects.
+- Raw snapshots and reversed bytes remain only in the coordination project's
+  ignored `work/vercel-migration/foia-recovery/`, directory mode700/file mode600.
+  No credential was printed or written. The Vercel source was not mutated or
+  frozen, so a fresh final export is mandatory during the approved read-only window.
+- The rehearsal database must never be bound to a published preview Worker.
+  Production cutover, DNS, native Git connection and data freeze remain coordinator
+  work. No push, deployment, source-data write or production database change occurred.
