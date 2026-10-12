@@ -121,3 +121,19 @@ records, secret values, or live writes were inspected during this preparation.
   also redirects this path. Its response contains no data or runtime secrets.
 - Independent normal-DNS acceptance can compare this marker to the exact native
   build/version evidence without printing idea or comment content.
+
+## 2026-10-12: source maintenance active; final-copy gate stopped
+
+- Coordinator started the approved window. Maintenance deployment
+  `dpl_HLNgRuRxmrH79n5NoRvJruRVKa5R` was promoted. Public reads preserve one
+  idea, two comments and two votes; its three mutation endpoints returned 503,
+  Retry-After 60 and no-store, without setting a voter cookie.
+- Activated the reviewed project-wide method-only freeze as WAF version 1,
+  rule `rule_foia_migration_read_only_method_freeze_mDPyhx`. Public aliases return 403.
+  Old protected aliases return 401 and require authenticated verification before
+  the final copy. No final export/import or DNS cutover has occurred at this gate.
+- Corrected the earlier ordering interpretation: Vercel's platform firewall is
+  before deployment protection, but project WAF is after it. This explains 401;
+  it does not prove authenticated write blocking. Canonical `/api//votes` returns
+  same-host 308 to `/api/votes`; repeating POST with `{}` reaches 403 on public
+  aliases and 401 on protected aliases. No valid write payload was sent.

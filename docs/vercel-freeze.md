@@ -35,10 +35,16 @@ has exactly this enabled rule before the final data copy. Send harmless empty
 JSON to all three mutation routes on the apex, www, production alias,
 production immutable URL, and every discovered preview/branch/immutable alias.
 Include encoded path spellings and a non-API path with the same harmless body.
-Require a Vercel WAF denial (normally 403). Vercel documents WAF evaluation before
-deployment protection, so protected aliases should also return the WAF denial.
-A remaining 401 proves deployment protection only and does not satisfy the freeze
-gate; inspect rule scope/order before proceeding.
+Require a Vercel WAF denial (normally 403). Vercel evaluates its platform-wide
+firewall first, deployment protection second, and project WAF rules third.
+Protected aliases therefore return 401 before the custom rule is evaluated.
+That proves deployment protection only; it does not replace authenticated
+verification of the old deployment's method denial. Do not create a new bypass
+credential without explicit authorization. Keep the final copy stopped until
+the coordinator reviews supported authenticated evidence.
+Repeated-slash URLs can return a same-host 308 before these layers. Follow only
+the verified relative canonical destination with the same method and harmless
+body, and require the destination's denial; do not accept arbitrary redirects.
 A 400 from application validation proves the freeze is missing.
 Also verify GET homepage/ideas/comments still succeeds on public aliases.
 Do not use valid synthetic post/vote bodies on the source.
