@@ -116,6 +116,15 @@ private migration processes and never in Cloudflare runtime or GitHub.
 - Host-specific redirect verification in Wrangler requires `--local-upstream`;
   normal Host headers alone do not override its configured route origin.
 
+- The 2026-10-13 fflate advisory is resolved with an npm override to 0.7.5
+  because Satori pins 0.7.3 exactly. Test with `npm ci`, lint, typecheck,
+  `npm test` and `npm run check:deploy`. In the Codex sandbox, Miniflare tests
+  require approved localhost socket access; a sandboxed run fails with EPERM
+  before any test assertion. Offline installs that omit optional packages need
+  matching platform-native packages restored before build and Wrangler checks.
+  braces 3.0.3 remains in Next ESLint and vinext glob tooling with no patched
+  version listed. Do not treat that version as a fix or dismiss the alert.
+
 - Source-freeze verification must account for Vercel deployment protection before
   project WAF. Unauthenticated401 does not prove authenticated method denial.
   Do not invoke CLI curl blindly: it may create a persistent bypass credential.
